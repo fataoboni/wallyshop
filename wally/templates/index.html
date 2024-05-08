@@ -1,0 +1,325 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1">
+    <title>MiniMignon</title>
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" href="{%static 'style.css'%}">
+    <style>
+        .popular-item{
+            width: 100%;
+            height: 400px;
+
+        }
+        .popular{
+            width:40%;
+            height:40%;
+        }
+        .box{
+            width: 100%;
+            height: auto;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+
+        .items {
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .item {
+            flex: 0 0 auto;
+            margin-right: 20px; /* Espacement entre les éléments */
+            animation: scrollItems 5s linear infinite; /* Définir l'animation */
+        }
+        
+        @keyframes scrollItems {
+            0% {
+                transform: translateX(0); /* Position de départ */
+            }
+            100% {
+                transform: translateX(-100%); /* Position finale */
+            }
+        }
+
+        /* CSS */
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: translateY(0); /* Début et fin de la translation (position initiale) */
+    }
+    50% {
+        transform: translateY(10px); /* Milieu de la translation (déplacement vers la droite) */
+    }
+}
+
+.promo-info h3 {
+    animation: heartbeat 1s ease-in-out infinite; /* Définir l'animation */
+}
+#popover-content input{
+    border: none;
+}
+button{
+    border: none;
+    padding: 10px;
+    border-radius:5px;
+}
+
+        /* Styles pour le popover */
+/* Styles pour le popover */
+#popover-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--main-color);
+    border: 1px solid #ccc;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 9999; /* Assurez-vous que le popover est au-dessus de tout le reste */
+    display: none; /* Cachez le popover par défaut */
+}
+#popover-content input{
+    border: none;
+    height: 30px;
+    border-radius:5px;
+}
+
+
+
+
+
+
+        @media screen and (max-width: 720px) {
+    .popular {
+        width: 100%;
+        height: 90%;
+    }
+    .popular-item{
+            width: 100%;
+            height: 260px;
+
+        }
+        .box{
+            
+        }
+}
+
+    </style>
+
+</head>
+<body>
+   
+    <header>
+        <nav style="display: flexl; justify-content: space-between; align-items: center;">
+            <div class="info">
+                <h3 style="color: white; text-transform: capitalize; font-weight: 900;">MiniMignon</h3>
+            </div>
+            <a href="{% url 'ajout' %}"><img class="img"  style="width: 80px; height: 80px;" src="{%static 'Logo.png'%}" alt=""></a>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var detonation = document.getElementById('detonation');
+                    var clickCount = 0;
+                    
+                    detonation.addEventListener('click', function() {
+                        clickCount++;
+                        if (clickCount === 3) {
+                            setTimeout(function() {
+                                window.location.href = "{% url 'index' %}";
+                            }, 1000);
+                        }
+                    });
+                });
+                </script>
+        </nav>
+        <form method="GET" action="{% url 'index' %}">
+            <div class="search">
+                <button style="background-color: white;" type="submit"><span class="las la-search"></span></button>
+                <input type="text" name="query" placeholder="vos recherches ...">
+            </div>
+        </form>        
+    </header>
+    <main>
+        <div class="categories section-wrapper">
+            <div class="flex-header">
+                <h2>Vos Articles</h2>
+                <a href="#">MiniMignon</a>
+            </div>
+            
+        <div class="items">
+            {% for product in products reversed %}
+                <div class="item">
+                    <img class="item-img" src="{{ product.image.url }}" alt="{{ product.name }}">
+                </div>
+            {% empty %}
+                <p>Aucun produit trouvé.</p>
+            {% endfor %}
+        </div>
+        </div>
+        
+        <div class="promo" style="margin-bottom: 25px;">
+            <div class="items promo-items">
+                <div class="promo-item">
+                    <div class="promo-img" style="border-radius: 50%; background-image: url('{% static 'Logo.png' %}'); "></div>
+                    <div class="promo-info">
+                        <h3 style="font-size: 16px;">% de réduction</h3>
+                        <p>Profitez de notre promo!</p>
+                        <a href="https://wa.me/+22667171092/?text= %%Je Veux Commander Et Béneficier De la Promotion" style="font-family: cursive; font-weight: 1000; color: red;">Commandez!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="box">
+            {% for product in products reversed %}
+        <div class="popular section-wrapper" style="margin-bottom: 25px;">
+            <div class="flex-header">
+                <h4>{{ product.price }} <span style="color: red; font-size: 10px;">Fcfa</span></h4>
+                <a href="{% url 'product_detail' product.id %}"><span style="color: var(--main-color); font-weight: 900;">Voir</span></a>
+            </div>
+            <div class="items">
+                    <a style="width: 100%;" href="https://wa.me/+22667171092/?text= {{ product.image.url }}-{{ product.price }}                                                      Puis-je en savoir plus à ce sujet?"><img class="popular-item"  src="{{ product.image.url }}" alt="{{ product.name }}"></a>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+    </main>
+    
+
+    <div class="bottom-nav">
+        <div class="bottom-inner">
+            <div class="bottom-main">
+                <div class="nav-items">
+                    <div class="nav-item">
+                        <a href="{% url 'index' %}"><span class="las la-home"></span></a>
+                        <p>Acceuil</p>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{% url 'afficher_commandes' %}">
+                            <span class="las la-shopping-bag"></span>
+                        </a>
+                        <p>Achats</p>
+                    </div>
+                </div>
+                <div class="nav-item-main">
+                    <div>
+                        <a href="{% url 'ajouter_commande_2' %}"><span id="popover" class="las la-shopping-cart"><span class="Compteur" style="color: red; font-size: 13px; position: absolute; left:47%; font-weight: bold; top:20%;"></span></span> </a>
+                    </div>
+                </div>
+                <div class="nav-items">
+                    <div class="nav-item">
+                        <a href="https://www.facebook.com/profile.php?id=61558573365244&mibextid=ZbWKwL"><span class="lab la-facebook"></span></a>
+                        <p>Facebook</p>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{% url 'offre' %}">
+                            <span class="las la-ellipsis-h"></span>
+                        </a>
+                        <p>Menu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+    <!-- Code HTML -->
+
+<script>
+    // Récupérer les données du panier depuis le localStorage
+    var cart = JSON.parse(localStorage.getItem('cart')) || [];
+    var distinctProductCount = cart.length; // Nombre de produits distincts
+
+    // Mettre à jour le compteur de produits ajoutés au panier
+    document.querySelector('.Compteur').textContent = distinctProductCount;
+</script>
+
+
+
+
+<!-- Code JavaScript -->
+<script>
+    // Fonction pour afficher le contenu du panier dans le popover
+    function showCart() {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var cartList = document.getElementById('cart-list');
+        cartList.innerHTML = '';
+
+        cart.forEach(function(item) {
+            var li = document.createElement('li');
+            li.textContent = item.name + ' - Quantité: ' + item.quantity + ' - Prix total: ' + item.totalPrice + ' Fcfa';
+
+            // Bouton pour supprimer le produit du panier
+            var deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.addEventListener('click', function() {
+                removeFromCart(item);
+            });
+            li.appendChild(deleteButton);
+
+            cartList.appendChild(li);
+        });
+
+        var popoverContent = document.getElementById('popover-content');
+        popoverContent.style.display = 'block';
+    }
+
+    // Fonction pour supprimer un produit du panier
+    function removeFromCart(item) {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var index = cart.findIndex(function(cartItem) {
+            return cartItem.name === item.name;
+        });
+
+        if (index !== -1) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCart(); // Actualiser l'affichage du panier
+            updateCartCounter(); // Actualiser le compteur de produits
+        }
+    }
+
+    // Écouteur d'événement pour afficher le contenu du panier lors du clic sur le popover
+    document.getElementById('popover').addEventListener('click', function() {
+        showCart();
+    });
+
+    // Écouteur d'événement pour soumettre le formulaire de commande
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Vous pouvez ajouter ici le code pour traiter la commande
+        // par exemple, envoyer les informations au serveur, vider le panier, etc.
+        alert('Commande passée avec succès!');
+        localStorage.removeItem('cart'); // Vider le panier après la commande
+        hideCart(); // Cacher le popover
+        updateCartCounter(); // Actualiser le compteur de produits
+    });
+
+    // Fonction pour cacher le popover
+    function hideCart() {
+        var popoverContent = document.getElementById('popover-content');
+        popoverContent.style.display = 'none';
+    }
+
+
+    // Fonction pour mettre à jour le compteur de produits ajoutés au panier
+    function updateCartCounter() {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var distinctProductCount = cart.length; // Nombre de produits distincts
+        document.querySelector('.Compteur').textContent = distinctProductCount;
+    }
+
+    // Appel initial pour mettre à jour le compteur de produits ajoutés au panier
+    updateCartCounter();
+</script>
+</html>
+
+

@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{%static 'style.css'%}">
+</head>
+<body>
+    <style>
+        /* Définir les couleurs personnalisées */
+    /* Style du formulaire */
+    form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid var(--main-color);
+    border-radius: 8px;
+    background-color: var(--main-color);
+    margin: 20px;
+    color: white;
+    }
+    
+    label {
+    display: block;
+    margin-bottom: 5px;
+    }
+    
+    input[type="number"],input[type="text"],input[type="file"],
+    select, textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--main-color);
+    border-radius: 5px;
+    }
+    
+    button {
+    background-color: var(--main-light);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    }
+    
+    button:hover {
+    background-color: darken(var(--main-color), 10%);
+    }
+    
+    
+    
+    </style>
+    
+       <!-- Code HTML -->
+    <div class="container mt-5">
+        
+    <!-- Contenu du popover -->
+    <form id="checkout-form" method="post">
+        <h3 style="font-size: 35px; font-weight: bolder; font-family: 'Courier New', Courier, monospace;">Panier</h3>
+        {% csrf_token %}
+        <div class="form-group">
+            <input name="items" type="text" id="cart-input" readonly>
+        </div>
+        <ul id="cart-list" style="display: none;"></ul>
+        <script>
+            // JavaScript pour remplir le champ d'entrée de texte avec le contenu du panier
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var cartItems = '';
+    
+            cart.forEach(function(item) {
+                cartItems += item.name + ' - Quantité: ' + item.quantity + ' - Prix total: ' + item.totalPrice + ' Fcfa  \n';
+            });
+    
+            var cartInput = document.getElementById('cart-input');
+            cartInput.value = cartItems;
+        </script>
+        <div class="form-group">
+            <label for="fullname">Nom complet:</label>
+            <input type="text" id="fullname" name="infouser" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Téléphone:</label>
+            <input type="text" id="phone" name="telephone" required>
+        </div>
+        <div class="form-group">
+            <label for="adresse">Adresse:</label>
+            <input type="text" id="adresse" name="adresse_livraison" required>
+        </div>
+        <a style="display:'none' ;" href="https://wa.me/+22667171092/?text= items Puis-je en savoir plus à ce sujet?"></a>
+        <button  type="submit" style="margin: top 25px; ;">Commandez</button>
+        <button onclick="clearLocalStorage()" style="background-color: red; margin-top: 25px;">Vider le panier</button>
+    </form>
+    </div>
+        <script>
+            // Fonction pour vider le localStorage et fermer le popover
+            function clearLocalStorage() {
+                localStorage.removeItem('cart');
+                alert('Le panier a été vidé.');
+                // Actualiser l'affichage du panier
+                var cartInput = document.getElementById('cart-input');
+                cartInput.value = '';
+                hideCart(); // Cacher le popover après avoir vidé le panier
+            }
+    
+        </script>
+<script>
+    document.getElementById("checkout-form").addEventListener("submit", function(event) {
+        // Récupérer les éléments du panier
+        var cartItems = document.getElementById('cart-input').value;
+
+        // Modifier le lien avec les éléments du panier
+        var link = document.querySelector('a');
+        var baseUrl = link.getAttribute('href').split('?')[0]; // Récupérer la partie de base du lien
+        var newUrl = baseUrl + '?text= Nouvelle Commande:                                    ' + encodeURIComponent(cartItems); // Ajouter les éléments du panier encodés à l'URL
+
+        // Mettre à jour l'attribut href du lien
+        link.setAttribute('href', newUrl);
+
+        // Ouvrir le lien WhatsApp dans une nouvelle fenêtre
+        window.open(newUrl, '_blank');
+    });
+</script>
+      
+</body>
+</html>

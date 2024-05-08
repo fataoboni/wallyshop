@@ -1,0 +1,265 @@
+
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1">
+    <title>MiniMignon</title>
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="shortcut icon" href="{%static 'style.css'%}" type="image/svg+xml">
+    <link rel="stylesheet" href="{%static 'style.css'%}">
+    <style>
+        .popular-item{
+            width: 100%;
+            height: 90%;
+
+        }
+
+        /* Styles pour le popover */
+/* Styles pour le popover */
+#popover-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--main-color);
+    border: 1px solid #ccc;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 9999; /* Assurez-vous que le popover est au-dessus de tout le reste */
+    display: none; /* Cachez le popover par défaut */
+}
+#popover-content input{
+    border: none;
+    height: 30px;
+    border-radius:5px;
+}
+button{
+    border: none;
+    padding: 10px;
+    border-radius:5px;
+}
+
+        .popular{
+            width:50%;
+            height:50%;
+        }
+        @media screen and (max-width: 720px) {
+    .popular {
+        width: 100%;
+        height: 90%;
+    }
+    .popular-item{
+            width: 100%;
+            height: 260px;
+
+        }
+}
+
+    </style>
+</head>
+<body>
+   
+    <header>
+        <nav style="display: flexl; justify-content: space-between; align-items: center;">
+        </nav>
+    </header>
+    <main>
+        <div class="popular section-wrapper" style="margin-bottom: 20px;">
+            <div class="flex-header">
+                <h2>{{ product.name }}</h2>
+                <a href="#"><p>{{ product.price }} <span style="color: red; font-size: 10px;">Fcfa</span></p></a>
+            </div>
+            <div class="items" style=" justify-content: center; font-family: cursor: pointer; display: inline;">
+                <a style="width: 100%;" href="https://wa.me/+22667171092/?text= {{ product.image.url }}-{{ product.price }}                                                                     Puis-je en savoir plus à ce sujet?"><img class="popular-item" style="width: 100%; height:260px; "  src="{{ product.image.url }}" alt="{{ product.name }}"></a>
+                <div class="desadd" style="width: 100%; height: 25%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                    <p>{{product.description }}</p>
+                </div>
+            </div>  
+        </div>
+        <div class="popular section-wrapper" style="margin-bottom:5px;">
+            <div class="flex-header" style="display: flex; justify-content: center; align-items: center;">
+                <i class="las la-cart-plus" style="font-size: 44px; color: blueviolet; font-weight: 900;"></i>
+            </div>
+        </div>
+    </main>
+
+    <div class="bottom-nav">
+        <div class="bottom-inner">
+            <div class="bottom-main">
+                <div class="nav-items">
+                    <div class="nav-item">
+                        <a href="{% url 'index' %}"><span class="las la-home"></span></a>
+                        <p>Acceuil</p>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{% url 'afficher_commandes' %}">
+                            <span class="las la-shopping-bag"></span>
+                        </a>
+                        <p>Achats</p>
+                    </div>
+                </div>
+                <div class="nav-item-main">
+                    <div>
+                        <a href="{% url 'ajouter_commande_2' %}"><span id="popover" class="las la-shopping-cart"><span class="Compteur" style="color: red; font-size: 13px; position: absolute; left:47%; font-weight: bold; top:20%;"></span></span> </a>
+                    </div>
+                </div>
+                <div class="nav-items">
+                    <div class="nav-item">
+                        <a href="https://www.facebook.com/profile.php?id=61558573365244&mibextid=ZbWKwL"><span class="lab la-facebook"></span></a>
+                        <p>Facebook</p>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{% url 'offre' %}">
+                            <span class="las la-ellipsis-h"></span>
+                        </a>
+                        <p>Menu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</div>
+<script>
+// Fonction pour récupérer les données du produit
+function getProductData() {
+    var productName = document.querySelector('h2').textContent.trim();
+    var productPrice = parseFloat(document.querySelector('p').textContent);
+    var productImage = document.querySelector('.popular-item').getAttribute('src');
+    return {
+        name: productName,
+        price: productPrice,
+        image: productImage
+    };
+}
+
+// Fonction pour ajouter un produit au panier
+function addToCart() {
+    var product = getProductData();
+    var cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // Vérifier si le produit existe déjà dans le panier
+    var existingProductIndex = cart.findIndex(item => item.name === product.name);
+    if (existingProductIndex !== -1) {
+        // Si le produit existe déjà, augmenter la quantité et mettre à jour le prix total
+        cart[existingProductIndex].quantity++;
+        cart[existingProductIndex].totalPrice = cart[existingProductIndex].quantity * product.price;
+    } else {
+        // Si le produit n'existe pas, l'ajouter avec une quantité de 1
+        product.quantity = 1;
+        product.totalPrice = product.price;
+        cart.push(product);
+    }
+
+    // Mettre à jour le panier dans le local storage
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    // Afficher une boîte de dialogue pour confirmer l'ajout au panier
+    alert('Ajouté au panier');
+
+    // Mettre à jour le compteur de produits ajoutés au panier
+    updateCartCounter();
+}
+
+// Fonction pour mettre à jour le compteur de produits ajoutés au panier
+function updateCartCounter() {
+    var cart = JSON.parse(localStorage.getItem('cart')) || [];
+    var distinctProductCount = cart.length; // Nombre de produits distincts
+    document.querySelector('.Compteur').textContent = distinctProductCount;
+}
+
+// Ajouter un écouteur d'événement pour le clic sur l'icône du panier
+document.querySelector('.las.la-cart-plus').addEventListener('click', addToCart);
+
+// Appel initial pour mettre à jour le compteur de produits ajoutés au panier
+updateCartCounter();
+
+// Afficher le contenu du panier dans la console
+console.log(JSON.parse(localStorage.getItem('cart')));
+
+
+
+
+</script>
+<!-- Code JavaScript -->
+<script>
+    // Fonction pour afficher le contenu du panier dans le popover
+    function showCart() {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var cartList = document.getElementById('cart-list');
+        cartList.innerHTML = '';
+
+        cart.forEach(function(item) {
+            var li = document.createElement('li');
+            li.textContent = item.name + ' - Quantité: ' + item.quantity + ' - Prix total: ' + item.totalPrice + ' Fcfa';
+
+            // Bouton pour supprimer le produit du panier
+            var deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.addEventListener('click', function() {
+                removeFromCart(item);
+            });
+            li.appendChild(deleteButton);
+
+            cartList.appendChild(li);
+        });
+
+        var popoverContent = document.getElementById('popover-content');
+        popoverContent.style.display = 'block';
+    }
+
+    // Fonction pour supprimer un produit du panier
+    function removeFromCart(item) {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var index = cart.findIndex(function(cartItem) {
+            return cartItem.name === item.name;
+        });
+
+        if (index !== -1) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCart(); // Actualiser l'affichage du panier
+            updateCartCounter(); // Actualiser le compteur de produits
+        }
+    }
+
+    // Écouteur d'événement pour afficher le contenu du panier lors du clic sur le popover
+    document.getElementById('popover').addEventListener('click', function() {
+        showCart();
+    });
+
+    // Écouteur d'événement pour soumettre le formulaire de commande
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Vous pouvez ajouter ici le code pour traiter la commande
+        // par exemple, envoyer les informations au serveur, vider le panier, etc.
+        alert('Commande passée avec succès!');
+        localStorage.removeItem('cart'); // Vider le panier après la commande
+        hideCart(); // Cacher le popover
+        updateCartCounter(); // Actualiser le compteur de produits
+    });
+
+    // Fonction pour cacher le popover
+    function hideCart() {
+        var popoverContent = document.getElementById('popover-content');
+        popoverContent.style.display = 'none';
+    }
+
+
+    // Fonction pour mettre à jour le compteur de produits ajoutés au panier
+    function updateCartCounter() {
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var distinctProductCount = cart.length; // Nombre de produits distincts
+        document.querySelector('.Compteur').textContent = distinctProductCount;
+    }
+
+    // Appel initial pour mettre à jour le compteur de produits ajoutés au panier
+    updateCartCounter();
+</script>
+</html>

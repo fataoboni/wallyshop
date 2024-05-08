@@ -1,0 +1,150 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1">
+    <title>Mobile UI</title>
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" href="{%static 'style.css'%}">
+</head>
+<body>
+   
+    <header>
+    </header>
+    
+    <main>
+        <div class="Alerte" style="display: flex; justify-content: center; align-items: center; color: black; font-size: 40px; font-family: cursive;">
+            Pas encore disponible!
+        </div>
+    </main>
+    
+    
+    <div class="bottom-nav">
+        <div class="bottom-inner">
+            <div class="bottom-main">
+                <div class="nav-items">
+                    <div class="nav-item">
+                        <a href="{% url 'index' %}"><span class="las la-home"></span></a>
+                        <p>Acceuil</p>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{% url 'afficher_commandes' %}">
+                            <span class="las la-shopping-bag"></span>
+                        </a>
+                        <p>Achats</p>
+                    </div>
+                </div>
+                <div class="nav-item-main">
+                    <div>
+                        <a href="{% url 'ajouter_commande_2' %}"><span id="popover" class="las la-shopping-cart"><span class="Compteur" style="color: red; font-size: 13px; position: absolute; left:47%; font-weight: bold; top:20%;"></span></span> </a>
+                    </div>
+                </div>
+                <div class="nav-items">
+                    <div class="nav-item">
+                        <a href="https://www.facebook.com/profile.php?id=61558573365244&mibextid=ZbWKwL"><span class="lab la-facebook"></span></a>
+                        <p>Facebook</p>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{% url 'offre' %}">
+                            <span class="las la-ellipsis-h"></span>
+                        </a>
+                        <p>Menu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+    <!-- Code HTML -->
+
+    <script>
+        // Récupérer les données du panier depuis le localStorage
+        var cart = JSON.parse(localStorage.getItem('cart')) || [];
+        var distinctProductCount = cart.length; // Nombre de produits distincts
+    
+        // Mettre à jour le compteur de produits ajoutés au panier
+        document.querySelector('.Compteur').textContent = distinctProductCount;
+    </script>
+    
+    
+    
+    
+    <!-- Code JavaScript -->
+    <script>
+        // Fonction pour afficher le contenu du panier dans le popover
+        function showCart() {
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var cartList = document.getElementById('cart-list');
+            cartList.innerHTML = '';
+    
+            cart.forEach(function(item) {
+                var li = document.createElement('li');
+                li.textContent = item.name + ' - Quantité: ' + item.quantity + ' - Prix total: ' + item.totalPrice + ' Fcfa';
+    
+                // Bouton pour supprimer le produit du panier
+                var deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Supprimer';
+                deleteButton.addEventListener('click', function() {
+                    removeFromCart(item);
+                });
+                li.appendChild(deleteButton);
+    
+                cartList.appendChild(li);
+            });
+    
+            var popoverContent = document.getElementById('popover-content');
+            popoverContent.style.display = 'block';
+        }
+    
+        // Fonction pour supprimer un produit du panier
+        function removeFromCart(item) {
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var index = cart.findIndex(function(cartItem) {
+                return cartItem.name === item.name;
+            });
+    
+            if (index !== -1) {
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                showCart(); // Actualiser l'affichage du panier
+                updateCartCounter(); // Actualiser le compteur de produits
+            }
+        }
+    
+        // Écouteur d'événement pour afficher le contenu du panier lors du clic sur le popover
+        document.getElementById('popover').addEventListener('click', function() {
+            showCart();
+        });
+    
+        // Écouteur d'événement pour soumettre le formulaire de commande
+        document.getElementById('checkout-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            // Vous pouvez ajouter ici le code pour traiter la commande
+            // par exemple, envoyer les informations au serveur, vider le panier, etc.
+            alert('Commande passée avec succès!');
+            localStorage.removeItem('cart'); // Vider le panier après la commande
+            hideCart(); // Cacher le popover
+            updateCartCounter(); // Actualiser le compteur de produits
+        });
+    
+        // Fonction pour cacher le popover
+        function hideCart() {
+            var popoverContent = document.getElementById('popover-content');
+            popoverContent.style.display = 'none';
+        }
+    
+    
+        // Fonction pour mettre à jour le compteur de produits ajoutés au panier
+        function updateCartCounter() {
+            var cart = JSON.parse(localStorage.getItem('cart')) || [];
+            var distinctProductCount = cart.length; // Nombre de produits distincts
+            document.querySelector('.Compteur').textContent = distinctProductCount;
+        }
+    
+        // Appel initial pour mettre à jour le compteur de produits ajoutés au panier
+        updateCartCounter();
+    </script>
+</html>
